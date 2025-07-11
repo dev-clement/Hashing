@@ -1,0 +1,8 @@
+= Hashing
+In this repository, we are talking about hashing data structure, we'll see what is a hash map, and how to work with those
+
+:toc:
+:sectnums:
+
+== link:https://github.com/dev-clement/Hashing/blob/main/Hashing.adoc[Hashmap]
+Before we get into deeper talking about hashing algorithm and so on, let’s have a look at what is an interface and its implementation in this context.

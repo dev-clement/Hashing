@@ -1,0 +1,92 @@
+= Hashing
+Let's take a look at what really is a data structure, actually a data structure is simple an interface and its implementation.
+
+:toc:
+:sectnums:
+
+== Introduction
+Before we get into deeper talking about hashing algorithm and so on, let's have a look at what is an interface and its implementation in this context.
+
+=== Interface
+The *Interface* is like a contract that specifies how we can interact with the given data structure. What operations we can perform on it ? What inputs expects, and what outputs we cna expects. Basically, it's how we use the data structure at our convenience.
+
+NOTE: For example, consider a synamic array. The interface would include operations such as appending, insert, remove, update and more. These operations are well-defined and have specifics rules that we must follow when we use them. If we want to append an element, we use the built-in method like `.append()` or even `.push()` while passing in the elements we want to either add or append to our array. Typically this operation doesn't return anything.
+
+=== Implementations
+The *implementation* on the other hands is the code that actually makes the data structure work. This is where the details of how the data is stored and how the operations are perfomed come into play. 
+
+NOTE: For example, the implementation of a dynamic array might involve allocating memory for the list, tracking the size, and rearranging the elements when an operation like remove is called.
+
+For many data structure, the implementation can be quite complex, involving intricate algorithms and data manipulation. However, we don't need to worry about those details, we only need to understand the interface and how to use it properly !
+
+NOTE: In this article and a few others in this sections, we'll only briefly talk about the underlying implementation details behind a data structure. While it does help to have a basic understanding, you shouldn't worry too much about memorizin these details. They are only included for completneness and in the context of the problem, you shouldn't need to worry about them.
+
+The more important thing is to understand the interface. All major data structures have built-in implementations in all major programming languages. In an interview it is expected that you know how to use the built-in data structures, but you wouldn't be asked to implement them yourself.
+
+== Hashmap
+In this article, we'll talk about hash maps and sets, which are implemented using the link:https://en.wikipedia.org/wiki/Hash_function[hashing algorithm].
+
+=== Hash function
+==== Definition
+An hash function is a function that takes an input and deterministically converts it to an integer that is less than a fixed size set by the programmer. Inputs are called *keys* and the same input will always be converted to the same integer. Here's an example hash algorithm for a string containing letters of the English alphabet:
+
+. Declare an integer named `total`
+. Iterate over the string. For each character, convert it to its position in the alphabet. For example `a -> 1`, `c -> 3`, `z -> 26`.
+. Take that value, and multiply it by the current position in the string (index + 1). Add this to `total`. For example, given the following string: `abc`, the `b` is at position 2 in the alphabet and the position `2` in the string, so would contribute: `2 * 2 = 4` towards `total`.
+. After going through every character, `total` is the converted value.
+
+This algorithm isn't actually a good hash function, but is just an example of how one could convert strings into integers. You may be wondering: don't we need to limit `total` to a fixed size ? Correct ! Right now, this algorithm is wrong. Let's say the limit we set was `x`. Then change step 4 to:
+
+* After going through every characters, `total % x` os the converted value.
+
+Where `%` is the link:https://en.wikipedia.org/wiki/Modulo[modulo operation] and makes sure the final converted value will be in the range `[0, x - 1]`.
+
+==== Why using an Hash function ?
+
+NOTE: As mentionned above, these sections that talks about how hashing is implemented is only included for completeness. Don't worry if you're having a hard time understanding it.
+
+We know that for sure, an array have an _O(1)_ random access. Given an arbitrary index, we can access and update its value in the array in constant time. The main constraints with arrays is that they are a fixed size, and the indices have to be integers. Because hash functions can convert any input into an integer, we can effectively remove the constraint of indices needing to be integers. When a hash function is combined with an array, it creates a *hash map* also known as a *hash table* or *dictionnary*.
+
+With arrays, we *map* indices to values. With hash maps, we map *keyx* to values and a key can be almost anything. Typically, the only constraint on a hash map's key is that it has to be *immutable* (this is language dependent but generally a good rule of thumb). Values can (on the other hand) be anything.
+
+A hash map is probably the most important concept in all of algorithm interviewing. It is extremely powerful and allows you to reduce the time complexity of an algorithm by a factor of _O(n)_ for a huge amount of problems. Every major language has a link:https://en.wikipedia.org/wiki/Hash_table#Implementations[built-in implementation of HashMap]. For example, in Python, they're called dictionaries and declaring one is as simple as `dict = {}`. If you could only take one thing from this article, it should be to master the hash map interface for the programming language you use.
+
+==== Summarize
+To summarize, a hash map is an unordered data structure that stores key-valuepairs. A hash map can add and remove elements in _O(1)_, as well as update values associated with a key and check if a key exists, also in a _O(1)_ too. You can iterate over both the keys and the values of an hash map, but the iteration won't necessarily follow any order (there are many implementations and this is language dependent for the built-in types).
+
+NOTE: An ordered date structure is one where the insertion order is "remembered". An unordered data structure is one where the insertion order isn't relevant.
+
+=== Comparison with Arrays
+In terms of time complexity. Hash maps blow arrays out of the water. The following operations are all _O(1)_ for a flash map:
+
+* Add an element and associate it with a value
+* Delete an element if it exists
+* Check if an element exists
+
+A hash map also has many of the same useful properties as an array with the same time complexity:
+
+* Find length / numbers of elements
+* Updating values
+* Iterate over elements
+
+NOTE: Hash maps are also just easier/cleaner to work with. Even if your keys are integers and you could get away with using an array, if you don't know what the max size of the key is, then you don't know how large you should size your array. With hash maps, you don't need to worry about that, since the key will be converted to a new integer within the size limit anyways.
+
+However, from a practical perspective, there are some disadvantages to using hash maps, and it's important to know them as it is common in interviews to talk about tradeoffs.
+
+The biggest disadvantage of hash maps is that for smaller input sizes, they can be slower due to overhead. Because big _O_ ignores constants, the _O(1)_ time complexity can sometimes be deceiving - it's usually something more like _O(10)_ because every key needs to go through the hash function.
+
+Hash tables can also take up more space. Dynamic arrays are actually fixed-size arrays that resize themselves when they go beyond their capacity. Hash tables are also implemented using a fixed size array - remember that the size is a limit set by the programmer. The problem is resizing a hash table is much more expensive because every existing key needs to be re-hashed, and also a hash table may use an array that is significantly larger than the number of elements stored, resulting in a huge waste of space. Let's say you chose your limit as 10 000 items, but only end up storing 10. Okay you could argue that 10 000 is too large, but then what if your next test case ends up needing to store 100 000 elements ? The points is, when you don't know how many elements you need to store, arrays are more flexible with resizing and not wasting space.
+
+NOTE: Remember that time complexity functions only involve the variables you define. When we say that hash map operations are _O(1)_, the variable are concerned with is usually _n_, which is the size of the hash map. However this may be misleading. For example, hashing a string requires _O(m)_ time, where _m_ is the length of the string. The constant time operations are only constant *relative to the size of the map*.
+
+== Set
+A `set` is another data structure that is very similar to a hash table. It uses the same mechanism for hashing keys into integers. The difference between a set and hash table is that sets do not map their keys to anything. Sets are more convenient to use when you only care about checking if elements exists. You can add, remove, and check if an element exists in a set all in _O(1)_.
+
+IMPORTANT: An important thing to note about sets is that they don't track frequency. If you have a set and add the same element 100 times, the first operation adds it and the next 99 do nothing
+
+NOTE: A set is basically a hash map if you only consider the keys.
+
+== Arrays as keys ?
+We said that being immutable is usually a requirement for being a hash map key. Array are mutable, so how do we store an ordered collection of elements as a key ? Depending on the language you're using, there are several ways to convert an array into a unique immutable key. In Python, we are using `tuples`, that is an immutable data structure, so it's as easy as doing `tuple(array)`. Another trick is to vert the array into a string, delimited by some character that is guaranteed to not show up in any element. For instance, use a comma to separate integers. `[1, 51, 163] ---> "1,51,163"`.
+
+NOTE: In some languages, there may be data structures that allow you to associate mutable data structures to values. For example, in C++ there is `std::map` that these are not hash maps, but they can be used to solver similar problem.
